@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gigapingu.docok.ui.components.*
@@ -325,72 +326,13 @@ data class AppointmentData(
     val notes: String
 )
 
-// Date Picker Dialog
-@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-fun DatePickerDialog(
-    onDateSelected: (LocalDate) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-    
-    DatePickerDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    datePickerState.selectedDateMillis?.let { millis ->
-                        // Convert millis to LocalDate
-                        val date = java.time.Instant.ofEpochMilli(millis)
-                            .atZone(java.time.ZoneId.systemDefault())
-                            .toLocalDate()
-                        onDateSelected(date)
-                    }
-                }
-            ) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
+fun NewAppointmentScreenPreview() {
+    DocOkTheme {
+        NewAppointmentScreen(
+            onNavigateToRecording = {},
+            onNavigateBack = {}
+        )
     }
-}
-
-// Time Picker Dialog
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TimePickerDialog(
-    onTimeSelected: (LocalTime) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    val timePickerState = rememberTimePickerState()
-    
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text("Select Time") },
-        text = {
-            TimePicker(state = timePickerState)
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onTimeSelected(
-                        LocalTime.of(timePickerState.hour, timePickerState.minute)
-                    )
-                }
-            ) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-        }
-    )
 }
