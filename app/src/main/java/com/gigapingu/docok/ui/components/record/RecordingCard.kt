@@ -1,14 +1,15 @@
 package com.gigapingu.docok.ui.components.record
 
-import androidx.compose.animation.core.*//
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +21,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.gigapingu.docok.R
 import com.gigapingu.docok.ui.theme.DocOkTheme
 import kotlinx.coroutines.delay
@@ -167,7 +167,7 @@ private fun Controls(
                 .background(if (isPaused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
         ) {
             Icon(
-                imageVector = if (isPaused) Icons.Default.Mic else Icons.Default.Pause,
+                imageVector = if (isPaused) Icons.Filled.PlayArrow else Icons.Filled.Clear,
                 contentDescription = if (isPaused) "Record" else "Pause",
                 tint = Color.White
             )
@@ -180,7 +180,7 @@ private fun Controls(
                 .background(Color(0xFF5CB85C))
         ) {
             Icon(
-                imageVector = Icons.Default.Stop,
+                imageVector = Icons.Default.Place,
                 contentDescription = "Stop",
                 tint = Color.White
             )

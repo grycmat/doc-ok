@@ -1,7 +1,8 @@
-package com.gigapingu.docok.ui.screens
+package com.gigapingu.docok.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,11 +17,10 @@ class NewAppointmentViewModel : ViewModel() {
     val uiState: StateFlow<NewAppointmentUiState> = _uiState.asStateFlow()
     
     init {
-        // Generate MRN when patient name is entered
         viewModelScope.launch {
             _uiState.collect { state ->
                 if (state.patientName.isNotEmpty() && state.medicalRecordNumber.isEmpty()) {
-                    generateMRN()
+                    generateAppointmentId()
                 }
             }
         }
@@ -107,8 +107,8 @@ class NewAppointmentViewModel : ViewModel() {
         )
     }
     
-    private fun generateMRN() {
-        val mrn = "MRN-${(100000..999999).random()}"
+    private fun generateAppointmentId() {
+        val mrn = "${(100000..999999).random()}"
         _uiState.update { currentState ->
             currentState.copy(medicalRecordNumber = mrn)
         }
@@ -125,11 +125,9 @@ class NewAppointmentViewModel : ViewModel() {
         _uiState.update { it.copy(isLoading = true) }
         
         viewModelScope.launch {
-            // Simulate saving appointment
-            kotlinx.coroutines.delay(1500)
+            delay(1500)
             
             _uiState.update { it.copy(isLoading = false) }
-            // Navigate to recording screen will be handled by the UI
         }
     }
     
@@ -137,18 +135,3 @@ class NewAppointmentViewModel : ViewModel() {
         _uiState.value = NewAppointmentUiState()
     }
 }
-
-data class NewAppointmentUiState(
-    val patientName: String = "",
-    val appointmentType: String? = null,
-    val appointmentDate: LocalDate = LocalDate.now(),
-    val appointmentTime: LocalTime = LocalTime.now(),
-    val medicalRecordNumber: String = "",
-    val clinicalNotes: String = "",
-    val hasConsent: Boolean = false,
-    val progress: Float = 0f,
-    val isFormValid: Boolean = false,
-    val isLoading: Boolean = false,
-    val hasUnsavedChanges: Boolean = false,
-    val pendingAppointments: Int = 3
-)

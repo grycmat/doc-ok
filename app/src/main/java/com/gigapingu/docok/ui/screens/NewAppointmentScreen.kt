@@ -1,5 +1,6 @@
 package com.gigapingu.docok.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,13 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gigapingu.docok.data.AppointmentData
 import com.gigapingu.docok.ui.components.*
 import com.gigapingu.docok.ui.theme.*
-import java.time.LocalDate
-import java.time.LocalTime
+import com.gigapingu.docok.ui.viewmodel.NewAppointmentViewModel
 
 @Composable
 fun NewAppointmentScreen(
@@ -29,7 +31,9 @@ fun NewAppointmentScreen(
     // Date and Time pickers
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    
+
+    val context = LocalContext.current
+
     DocOkTheme {
         GradientBackground {
             Box(
@@ -44,7 +48,6 @@ fun NewAppointmentScreen(
                 ) {
                     Spacer(modifier = Modifier.height(40.dp))
                     
-                    // Header Card
                     HeaderCard(
                         userName = "Dr. Smith",
                         subtitle = if (uiState.progress == 1f) {
@@ -57,7 +60,6 @@ fun NewAppointmentScreen(
                     
                     Spacer(modifier = Modifier.height(20.dp))
                     
-                    // Main Form Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(20.dp),
@@ -79,18 +81,17 @@ fun NewAppointmentScreen(
                                 onValueChange = { viewModel.updatePatientName(it) },
                                 placeholder = "Patient name...",
                                 onSearchClick = {
-                                    // Optional: Open patient search
+                                    TODO()
                                 }
                             )
                             
                             Spacer(modifier = Modifier.height(24.dp))
                             
-                            // Appointment Type Section
                             SectionTitle(
                                 title = "Appointment Type",
                                 showSeeAll = true,
                                 onSeeAllClick = {
-                                    // Show all appointment types
+                                    TODO()
                                 }
                             )
                             
@@ -166,7 +167,6 @@ fun NewAppointmentScreen(
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
-                            // Clinical Notes
                             TaskCard(
                                 title = "Clinical Notes",
                                 badge = "Optional",
@@ -183,12 +183,10 @@ fun NewAppointmentScreen(
                             
                             Spacer(modifier = Modifier.height(20.dp))
                             
-                            // Progress Bar
                             ProgressBar(progress = uiState.progress)
                             
                             Spacer(modifier = Modifier.height(20.dp))
                             
-                            // Consent Card
                             ConsentCard(
                                 isChecked = uiState.hasConsent,
                                 onCheckedChange = { viewModel.updateConsent(it) },
@@ -197,16 +195,11 @@ fun NewAppointmentScreen(
                             
                             Spacer(modifier = Modifier.height(24.dp))
                             
-                            // Action Buttons
                             ActionButton(
-                                text = "Let's Start Recording",
+                                text = "Start Recording",
                                 onClick = {
                                     if (viewModel.validateForm()) {
-                                        toastState.showToast(
-                                            message = "Appointment Created",
-                                            subtitle = "Proceeding to recording...",
-                                            type = ToastType.SUCCESS
-                                        )
+                                        Toast.makeText(context, "Appointment Created", Toast.LENGTH_SHORT).show()
                                         onNavigateToRecording(
                                             AppointmentData(
                                                 patientName = uiState.patientName,
@@ -218,19 +211,14 @@ fun NewAppointmentScreen(
                                             )
                                         )
                                     } else {
-                                        toastState.showToast(
-                                            message = "Please fill all required fields",
-                                            type = ToastType.WARNING
-                                        )
+                                        Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
                                     }
                                 },
-                                enabled = uiState.isFormValid,
                                 isLoading = uiState.isLoading
                             )
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
-                            // Cancel Link
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
                                 contentAlignment = Alignment.Center
@@ -238,12 +226,7 @@ fun NewAppointmentScreen(
                                 TextLinkButton(
                                     text = "Cancel appointment",
                                     onClick = {
-                                        if (uiState.hasUnsavedChanges) {
-                                            // Show confirmation dialog
-                                            onNavigateBack()
-                                        } else {
-                                            onNavigateBack()
-                                        }
+                                        onNavigateBack()
                                     }
                                 )
                             }
@@ -253,42 +236,15 @@ fun NewAppointmentScreen(
                     Spacer(modifier = Modifier.height(100.dp))
                 }
                 
-                // Floating Action Button
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(30.dp)
                         .navigationBarsPadding()
                 ) {
-                    MedRecordFAB(
-                        onClick = {
-                            toastState.showToast(
-                                message = "Quick Guide",
-                                subtitle = "Fill patient info → Select type → Get consent → Start!",
-                                type = ToastType.INFO,
-                                duration = 5000L
-                            )
-                        },
-                        icon = "?"
-                    )
+
                 }
-                
-                // Toast notifications
-                toastState.currentToast?.let { toast ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .statusBarsPadding()
-                    ) {
-                        MedRecordToast(
-                            message = toast.message,
-                            subtitle = toast.subtitle,
-                            type = toast.type,
-                            duration = toast.duration,
-                            onDismiss = { toastState.dismiss() }
-                        )
-                    }
-                }
+
             }
         }
         
@@ -317,14 +273,7 @@ fun NewAppointmentScreen(
 }
 
 // Data class for passing appointment data
-data class AppointmentData(
-    val patientName: String,
-    val appointmentType: String,
-    val date: LocalDate,
-    val time: LocalTime,
-    val medicalRecordNumber: String,
-    val notes: String
-)
+
 
 @Preview(showBackground = true)
 @Composable
