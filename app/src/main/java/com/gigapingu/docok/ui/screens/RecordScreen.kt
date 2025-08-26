@@ -30,7 +30,7 @@ fun RecordScreen(
         var seconds = 0
         while (isRecording) {
             delay(1000)
-            if (!isPaused) {
+            if (!isPaused) {g
                 seconds++
                 val mins = (seconds / 60).toString().padStart(2, '0')
                 val secs = (seconds % 60).toString().padStart(2, '0')
