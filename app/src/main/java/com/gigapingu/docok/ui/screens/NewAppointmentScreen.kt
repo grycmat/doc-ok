@@ -3,21 +3,25 @@ package com.gigapingu.docok.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gigapingu.docok.data.AppointmentData
 import com.gigapingu.docok.ui.components.*
-import com.gigapingu.docok.ui.theme.*
+import com.gigapingu.docok.ui.theme.DocOkTheme
 import com.gigapingu.docok.ui.viewmodel.NewAppointmentViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewAppointmentScreen(
     onNavigateToRecording: (AppointmentData) -> Unit,
@@ -27,227 +31,192 @@ fun NewAppointmentScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    // Date and Time pickers
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
+    val appointmentTypes = listOf("Consultation", "Follow-up", "Routine", "Emergency")
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
     DocOkTheme {
-        GradientBackground {
-            Box(
-                modifier = Modifier.fillMaxSize()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 20.dp)
+                    .navigationBarsPadding()
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = 20.dp)
-                        .navigationBarsPadding()
-                ) {
-                    Spacer(modifier = Modifier.height(40.dp))
-                    
-                    HeaderCard(
-                        userName = "Dr. Smith",
-                        subtitle = if (uiState.progress == 1f) {
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Header
+                Column {
+                    Text(
+                        text = "Welcome, Dr. Smith",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (uiState.progress == 1f) {
                             "Ready to record!"
                         } else {
                             "${uiState.pendingAppointments} appointments pending"
                         },
-                        pendingCount = uiState.pendingAppointments
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
-                    Spacer(modifier = Modifier.height(20.dp))
-                    
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 10.dp
+                }
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Patient Details Section
+                SectionTitle(title = "Patient Details")
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = uiState.patientName,
+                    onValueChange = { viewModel.updatePatientName(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Patient Name") },
+                    trailingIcon = {
+                        IconButton(onClick = { /* TODO: Implement search functionality */ }) {
+                            Icon(Icons.Default.Search, contentDescription = "Search Patient")
+                        }
+                    },
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = uiState.medicalRecordNumber,
+                    onValueChange = { viewModel.updateMedicalRecordNumber(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Medical Record Number (optional)") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.ConfirmationNumber,
+                            contentDescription = null
                         )
+                    },
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Appointment Details Section
+                SectionTitle(title = "Appointment Details")
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = isDropdownExpanded,
+                    onExpandedChange = { isDropdownExpanded = !isDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = uiState.appointmentType ?: "Select type",
+                        onValueChange = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        readOnly = true,
+                        label = { Text("Appointment Type") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded)
+                        }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false }
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp)
-                        ) {
-                            // Patient Name Search Input
-                            SearchInput(
-                                value = uiState.patientName,
-                                onValueChange = { viewModel.updatePatientName(it) },
-                                placeholder = "Patient name...",
-                                onSearchClick = {
-                                    TODO()
-                                }
-                            )
-                            
-                            Spacer(modifier = Modifier.height(24.dp))
-                            
-                            SectionTitle(
-                                title = "Appointment Type",
-                                showSeeAll = true,
-                                onSeeAllClick = {
-                                    TODO()
-                                }
-                            )
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            CategoryGrid(
-                                categories = listOf(
-                                    CategoryItem(
-                                        id = "consultation",
-                                        emoji = "🩺",
-                                        title = "Consultation",
-                                        subtitle = "30-45 min",
-                                        color = MaterialTheme.customColors.consultationColor
-                                    ),
-                                    CategoryItem(
-                                        id = "follow-up",
-                                        emoji = "📋",
-                                        title = "Follow-up",
-                                        subtitle = "15-20 min",
-                                        color = MaterialTheme.customColors.followUpColor
-                                    ),
-                                    CategoryItem(
-                                        id = "routine",
-                                        emoji = "🔄",
-                                        title = "Routine",
-                                        subtitle = "20-30 min",
-                                        color = MaterialTheme.customColors.routineColor
-                                    ),
-                                    CategoryItem(
-                                        id = "emergency",
-                                        emoji = "🚨",
-                                        title = "Emergency",
-                                        subtitle = "Immediate",
-                                        color = MaterialTheme.customColors.emergencyColor
-                                    )
-                                ),
-                                selectedCategory = uiState.appointmentType,
-                                onCategorySelected = { viewModel.updateAppointmentType(it) }
-                            )
-                            
-                            Spacer(modifier = Modifier.height(28.dp))
-                            
-                            // Schedule Information
-                            SectionTitle(title = "Appointment Details")
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            TaskCard(
-                                title = "Schedule Information",
-                                badge = if (uiState.appointmentType == "emergency") "Urgent" else "Today",
-                                badgeColor = if (uiState.appointmentType == "emergency") {
-                                    MaterialTheme.customColors.emergencyColor
-                                } else {
-                                    MaterialTheme.customColors.consultationColor
-                                }
-                            ) {
-                                DateTimeRow(
-                                    date = uiState.appointmentDate,
-                                    time = uiState.appointmentTime,
-                                    onDateClick = { showDatePicker = true },
-                                    onTimeClick = { showTimePicker = true }
-                                )
-                                
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                InputField(
-                                    value = uiState.medicalRecordNumber,
-                                    onValueChange = { viewModel.updateMedicalRecordNumber(it) },
-                                    placeholder = "Medical Record Number (optional)",
-                                    leadingIcon = "🏷️"
-                                )
-                            }
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            TaskCard(
-                                title = "Clinical Notes",
-                                badge = "Optional",
-                                badgeColor = MaterialTheme.customColors.followUpColor
-                            ) {
-                                InputField(
-                                    value = uiState.clinicalNotes,
-                                    onValueChange = { viewModel.updateClinicalNotes(it) },
-                                    placeholder = "Initial observations or symptoms...",
-                                    singleLine = false,
-                                    modifier = Modifier.heightIn(min = 100.dp)
-                                )
-                            }
-                            
-                            Spacer(modifier = Modifier.height(20.dp))
-                            
-                            ProgressBar(progress = uiState.progress)
-                            
-                            Spacer(modifier = Modifier.height(20.dp))
-                            
-                            ConsentCard(
-                                isChecked = uiState.hasConsent,
-                                onCheckedChange = { viewModel.updateConsent(it) },
-                                text = "Patient consents to audio recording for medical documentation"
-                            )
-                            
-                            Spacer(modifier = Modifier.height(24.dp))
-                            
-                            ActionButton(
-                                text = "Start Recording",
+                        appointmentTypes.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type) },
                                 onClick = {
-                                    if (viewModel.validateForm()) {
-                                        Toast.makeText(context, "Appointment Created", Toast.LENGTH_SHORT).show()
-                                        onNavigateToRecording(
-                                            AppointmentData(
-                                                patientName = uiState.patientName,
-                                                appointmentType = uiState.appointmentType ?: "",
-                                                date = uiState.appointmentDate,
-                                                time = uiState.appointmentTime,
-                                                medicalRecordNumber = uiState.medicalRecordNumber,
-                                                notes = uiState.clinicalNotes
-                                            )
-                                        )
-                                    } else {
-                                        Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
-                                    }
-                                },
-                                isLoading = uiState.isLoading
+                                    viewModel.updateAppointmentType(type)
+                                    isDropdownExpanded = false
+                                }
                             )
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                TextLinkButton(
-                                    text = "Cancel appointment",
-                                    onClick = {
-                                        onNavigateBack()
-                                    }
-                                )
-                            }
                         }
                     }
-                    
-                    Spacer(modifier = Modifier.height(100.dp))
                 }
-                
-                Box(
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DateTimeRow(
+                    date = uiState.appointmentDate,
+                    time = uiState.appointmentTime,
+                    onDateClick = { showDatePicker = true },
+                    onTimeClick = { showTimePicker = true }
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Clinical Notes Section
+                SectionTitle(title = "Clinical Notes")
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = uiState.clinicalNotes,
+                    onValueChange = { viewModel.updateClinicalNotes(it) },
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(30.dp)
-                        .navigationBarsPadding()
+                        .fillMaxWidth()
+                        .heightIn(min = 120.dp),
+                    label = { Text("Initial observations or symptoms (optional)") },
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Progress and Consent
+                ProgressBar(progress = uiState.progress)
+                Spacer(modifier = Modifier.height(20.dp))
+                ConsentCard(
+                    isChecked = uiState.hasConsent,
+                    onCheckedChange = { viewModel.updateConsent(it) },
+                    text = "Patient consents to audio recording for medical documentation"
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Actions
+                ActionButton(
+                    text = "Start Recording",
+                    onClick = {
+                        if (viewModel.validateForm()) {
+                            Toast.makeText(context, "Appointment Created", Toast.LENGTH_SHORT).show()
+                            onNavigateToRecording(
+                                AppointmentData(
+                                    patientName = uiState.patientName,
+                                    appointmentType = uiState.appointmentType ?: "",
+                                    date = uiState.appointmentDate,
+                                    time = uiState.appointmentTime,
+                                    medicalRecordNumber = uiState.medicalRecordNumber,
+                                    notes = uiState.clinicalNotes
+                                )
+                            )
+                        } else {
+                            Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    isLoading = uiState.isLoading
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-
+                    TextLinkButton(
+                        text = "Cancel appointment",
+                        onClick = { onNavigateBack() }
+                    )
                 }
-
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
-        
-        // Date Picker Dialog
+
         if (showDatePicker) {
             DatePickerDialog(
                 onDateSelected = { date ->
@@ -257,8 +226,7 @@ fun NewAppointmentScreen(
                 onDismissRequest = { showDatePicker = false }
             )
         }
-        
-        // Time Picker Dialog
+
         if (showTimePicker) {
             TimePickerDialog(
                 onTimeSelected = { time ->
@@ -270,9 +238,6 @@ fun NewAppointmentScreen(
         }
     }
 }
-
-// Data class for passing appointment data
-
 
 @Preview(showBackground = true)
 @Composable
