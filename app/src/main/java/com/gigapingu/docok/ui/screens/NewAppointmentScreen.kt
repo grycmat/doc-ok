@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,7 +48,7 @@ fun NewAppointmentScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 20.dp, vertical = 36.dp)
                     .navigationBarsPadding()
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -97,7 +97,7 @@ fun NewAppointmentScreen(
                     label = { Text("Medical Record Number (optional)") },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Filled.ConfirmationNumber,
+                            imageVector = Icons.Filled.AccountBox,
                             contentDescription = null
                         )
                     },

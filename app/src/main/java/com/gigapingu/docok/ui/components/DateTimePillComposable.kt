@@ -20,6 +20,7 @@ import com.gigapingu.docok.ui.theme.*
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.material.icons.Icons
 
 /**
  * Pill-shaped date/time selector
@@ -93,7 +94,8 @@ fun DateTimePill(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
-                
+
+
                 Text(
                     text = value,
                     style = CustomTextStyles.inputText,
