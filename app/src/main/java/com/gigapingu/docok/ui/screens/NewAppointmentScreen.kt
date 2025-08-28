@@ -26,8 +26,7 @@ fun NewAppointmentScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-    val toastState = rememberToastState()
-    
+
     // Date and Time pickers
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }

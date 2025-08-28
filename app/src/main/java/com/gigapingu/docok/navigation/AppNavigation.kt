@@ -3,8 +3,6 @@ package com.gigapingu.docok.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
-import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.gigapingu.docok.ui.screens.NewAppointmentScreen

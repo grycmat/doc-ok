@@ -8,10 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gigapingu.docok.ui.components.record.NotesSection
 import com.gigapingu.docok.ui.components.record.PatientCard
 import com.gigapingu.docok.ui.components.record.RecordingCard
 import com.gigapingu.docok.ui.theme.DocOkTheme
+import com.gigapingu.docok.ui.viewmodel.RecordViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -19,7 +21,8 @@ fun RecordScreen(
     modifier: Modifier = Modifier,
     patientName: String,
     medicalRecordNumber: String,
-    appointmentType: String
+    appointmentType: String,
+    recordViewModel: RecordViewModel = viewModel()
 ) {
     var isRecording by remember { mutableStateOf(true) }
     var isPaused by remember { mutableStateOf(false) }
